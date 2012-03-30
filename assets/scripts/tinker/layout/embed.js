@@ -55,14 +55,14 @@ authors:
 		if (tabs) {
 			tabs = tabs.split(',');
 		} else {
-			tabs = ['result', 'interaction', 'markup', 'style'];
+			tabs = ['result', 'behaviour', 'markup', 'style'];
 		}
 
 		var tabHtml = '';
 		Array.each(tabs, function(tab) {
-			tabHtml += '<li><a href="#'+tab+'" class="button tab-'+tab+'">'+String.capitalize(tab)+'</a></li>';
+			tabHtml += '<li><a href="#'+tab+'" class="tab-'+tab+'">'+String.capitalize(tab)+'</a></li>';
 		});
-		var tabContainer = new Element('ul.buttons', {html: tabHtml});
+		var tabContainer = new Element('ul.tabs', {html: tabHtml});
 
 		tabContainer.addEvent('click:relay(a)', function(e) {
 			e.preventDefault();
@@ -71,8 +71,8 @@ authors:
 			var nextPanel = panelContaining(tab);
 			panels[curPanel].getOuter().setStyle('z-index', 1);
 			nextPanel.getOuter().setStyle('z-index', 2);
-			tabContainer.getElement('.tab-'+curTab).removeClass('active');
-			tabContainer.getElement('.tab-'+tab).addClass('active');
+			tabContainer.getElement('.tab-'+curTab).removeClass('is-active');
+			tabContainer.getElement('.tab-'+tab).addClass('is-active');
 			curPanel = nextPanel.index;
 			curTab = tab;
 		}).inject(header);
@@ -100,10 +100,13 @@ authors:
 		T.Events.fireEvent('layout.build');
 
 		curTab = T.URL.get('active', 'result');
+		if (tabs.indexOf(curTab) === -1) {
+			curTab = tabs[0];
+		}
 		var nextPanel = panelContaining(curTab);
 		nextPanel.getOuter().setStyle('z-index', 2);
 		curPanel = nextPanel.index;
-		tabContainer.getElement('.tab-'+curTab).addClass('active');
+		tabContainer.getElement('.tab-'+curTab).addClass('is-active');
 	}
 
 	/**
@@ -126,7 +129,7 @@ authors:
 	{
 		switch (frame) {
 			case 'result': return T.Result.getPanel(); break;
-			case 'interaction': return T.InteractionEditor.getPanel(); break;
+			case 'behaviour': return T.InteractionEditor.getPanel(); break;
 			case 'markup': return T.MarkupEditor.getPanel(); break;
 			case 'style': return T.StyleEditor.getPanel(); break;
 		}
