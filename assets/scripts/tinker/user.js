@@ -96,33 +96,9 @@ authors:
 				log(response);
 				if (response.status === 'ok'){
 					log('registration was successful. check email.');
-					accountButtons.dispose();
-					fieldList.empty();
-					fieldList.adopt(
-						new Element('li', {html: '<label>Verification code</label><input name="verification">'}),
-						accountButtons
-					);
-					form.set('action', '#verify');
-					btnLogin.set('value', 'Verify');
 				} else {
 					log('stuff exploded, handle it!');
 				}
-			}
-		}).send();
-	}
-
-	/**
-	 *
-	 */
-	function verify(){
-		log('verify');
-
-		new Request.JSON({
-			url:' /verify',
-			data: form,
-			method: 'post',
-			onSuccess: function(response){
-				log(response);
 			}
 		}).send();
 	}

@@ -22,6 +22,25 @@ class Client < Controller
 		body haml :embed, :locals => locals
 	end
 
+	# verification
+	get %r{^/verify/([a-zA-Z0-9]+==)} do |encoded|
+		data = Base64.decode64(encoded).split("\n")
+		email = data[0] || nil
+		hash = data[1] || nil
+
+		query = DB[:user].filter(
+			:email => email,
+			:hash => hash,
+			:status => 1
+		)
+
+		if query.count == 1
+			query.update(:hash => nil, :status => 0)
+		end
+
+		redirect APP_CONFIG['urls']['client']
+	end
+
 	# save new or existing tinker
 	post '/save' do
 		tinker = Tinker.find(params[:hash])
@@ -59,8 +78,14 @@ class Client < Controller
 		user = User.new
 
 		user['username'] = params[:username]
-		user['password'] = params[:password]
+		user['password'] = Digest::SHA1.hexdigest(params[:password])
 		user['email'] = params['email']
+		user['hash'] = Digest::SHA1.hexdigest(Time.new.to_i.to_s)[0..4]
+
+		encoded = Base64.encode64(user['email']+"\n"+user['hash'])
+
+		p encoded
+
 		if user.register
 			{
 				:status => 'ok',
@@ -79,14 +104,6 @@ class Client < Controller
 
 	# user login
 	post '/login' do
-		{
-			:status => 'ok',
-			:data => params
-		}.to_json
-	end
-
-	# user login
-	post '/verify' do
 		{
 			:status => 'ok',
 			:data => params
