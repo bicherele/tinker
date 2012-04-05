@@ -19,6 +19,10 @@ authors:
 	 *
 	 */
 	function build(){
+		T.Layout.wrapper.adopt(
+			new Element('input[type=hidden]', {name: 'x_user_id', value: '0'})
+		);
+
 		var userButton = new Element('a.account[href=#account][text=Account]');
 		T.Layout.addToRegion(userButton, 'bl');
 		var html = '<fieldset><ul><li><label>Username</label><input name="username"></li>'
